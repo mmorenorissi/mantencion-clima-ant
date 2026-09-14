@@ -3176,6 +3176,10 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
           <div class="field"><label>Área específica</label><input type="text" id="pzAreaEspecifica" placeholder="Ej: Aglomerado"></div>
         </div>
         <div class="field"><label>Nombre de la sala</label><input type="text" id="pzSalaNombre" placeholder="Ej: SS/EE Variadores ER101"></div>
+        <div class="row2">
+          <div class="field"><label>Marca (si se conoce)</label><input type="text" id="pzMarca" placeholder="Ej: Bomaksan"></div>
+          <div class="field"><label>Modelo (si se conoce)</label><input type="text" id="pzModelo" placeholder="Ej: Wally-50"></div>
+        </div>
         <div class="field">
           <label>Estado</label>
           <select id="pzEstado">
@@ -3231,11 +3235,7 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
 // Truckshop SSEE 5600 (Sala N°3): tags corregidos de [1,2,1] a [1,2,3].
 // Húmeda/SX-EW: el Split Muro (Vesta) que compartía Tag 1 con la Sala N°7 pasó a ser su propia Sala N°8;
 // todo lo que venía después (Lixiviación, Sub Estación Eléctrica) corrió +1 en la numeración de sala.
-// Salas de Hidratación: 6ª área agregada a partir de LEVANTAMIENTO_SALAS_HIDRATACIO_N.pptx (levantamiento
-// campo, César Oñate). 4 salas, 1 equipo Split Muro c/u. 3 son móviles (SH ID Chile, SH NTC Sector Armado,
-// SH NTC Sector Desarme — hoy en Pilas Dinámicas pero se pueden trasladar) y 1 es fija (SH Operadores
-// Antucoya). Sin presurizador (no aplica). Sin registro de mantención propio todavía.
-const AREAS = ["Chancado", "Apilamiento", "Ripios", "Húmeda", "Truckshop", "Salas de Hidratación"];
+const AREAS = ["Chancado", "Apilamiento", "Ripios", "Húmeda", "Truckshop"];
 
 // ------------------------------------------------------------
 // PRESURIZADORES — sistema paralelo a Clima. Mismas 4 áreas salvo Truckshop
@@ -3246,44 +3246,43 @@ const AREAS = ["Chancado", "Apilamiento", "Ripios", "Húmeda", "Truckshop", "Sal
 const AREAS_PRESURIZADORES = ["Chancado", "Apilamiento", "Ripios", "Húmeda"];
 
 const PRESURIZADORES_DEFAULT = [
-  { id:'PZ-CHA-01', area:'Chancado', areaEspecifica:'Chancado', salaNombre:'SS/EE Primario', salaCodigo:'2000-EE-001-C01', tagOriginal:'2000-EE001-DP3-C01', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-CHA-02', area:'Chancado', areaEspecifica:'Chancado', salaNombre:'SS/EE Secundario / Terciario', salaCodigo:'2000-EE-002-C01', tagOriginal:'2000-EE002-DP3-C01', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-CHA-03', area:'Chancado', areaEspecifica:'Aglomerado', salaNombre:'SS/EE Variadores ER101', salaCodigo:'3100-ER101-C02', tagOriginal:'3220-HV031-C02', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'REQUIERE CAMBIO', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-CHA-04', area:'Chancado', areaEspecifica:'Aglomerado', salaNombre:'SS/EE LP1', salaCodigo:'3100-ER001-C02', tagOriginal:'3100-HV011-C02', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'REQUIERE CAMBIO', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-API-01', area:'Apilamiento', areaEspecifica:'Apilamiento', salaNombre:'Cabina Apilamiento', salaCodigo:'OPERADOR', tagOriginal:'', estado:'Pendiente de instalar', pendienteInstalar:true, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-API-02', area:'Apilamiento', areaEspecifica:'Apilamiento', salaNombre:'PUENTE ME013', salaCodigo:'ER-003', tagOriginal:'3230-HV041-C02', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-API-03', area:'Apilamiento', areaEspecifica:'Apilamiento', salaNombre:'TRIPPER CAR 2', salaCodigo:'ER-004', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-RIP-01', area:'Ripios', areaEspecifica:'Ripios', salaNombre:'Cabina Rotopala', salaCodigo:'OPERADOR', tagOriginal:'N/A', estado:'Pendiente de instalar', pendienteInstalar:true, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-RIP-02', area:'Ripios', areaEspecifica:'Ripios', salaNombre:'ROTOPALA', salaCodigo:'ER-005', tagOriginal:'3310-HV051-C02', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-RIP-03', area:'Ripios', areaEspecifica:'Ripios', salaNombre:'PUENTE CV016', salaCodigo:'ER-006', tagOriginal:'3320-HV071-C02', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-RIP-04', area:'Ripios', areaEspecifica:'Ripios', salaNombre:'SS/EE CV017 LP-2', salaCodigo:'ER-009', tagOriginal:'3300-HV91-C02', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-RIP-05', area:'Ripios', areaEspecifica:'Ripios', salaNombre:'SS/EE Cola CV019', salaCodigo:'ER-010', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-RIP-06', area:'Ripios', areaEspecifica:'Ripios', salaNombre:'SS/EE Cola CV019/020', salaCodigo:'ER-011', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-RIP-07', area:'Ripios', areaEspecifica:'Ripios', salaNombre:'TRIPPER CAR 3', salaCodigo:'ER-012', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-RIP-08', area:'Ripios', areaEspecifica:'Ripios', salaNombre:'Spreader', salaCodigo:'ER-013', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
-  { id:'PZ-RIP-09', area:'Ripios', areaEspecifica:'Ripios', salaNombre:'Cabina Spreader', salaCodigo:'CABINA', tagOriginal:'', estado:'Pendiente de instalar', pendienteInstalar:true, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-01', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'SS/EE Tren A', salaCodigo:'4100-ER001-C03', tagOriginal:'CB10', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-02', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'SS/EE Tren B', salaCodigo:'4100-ER002-C03', tagOriginal:'CB10', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-03', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'SS/FF Rectificador Sur', salaCodigo:'SALA FUERZA', tagOriginal:'', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-04', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'SS/EE Rectificador Sur', salaCodigo:'SALA ELECTRICA', tagOriginal:'CB03', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-05', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'SS/EW', salaCodigo:'4300-ER001-C03', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-06', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'SS/FF MRDC', salaCodigo:'4300-WS001-C03', tagOriginal:'CB02', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-07', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'SS/CC MRDC GABINETE ROBOT', salaCodigo:'', tagOriginal:'N/A', estado:'Pendiente de instalar', pendienteInstalar:true, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-08', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'SS/FF Rectificador Norte', salaCodigo:'SALA FURZA', tagOriginal:'', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-09', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'SS/EE Rectificador Norte', salaCodigo:'SALA ELECTRICA', tagOriginal:'CB03', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-10', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'SS/EE Patio de Estanques', salaCodigo:'4200-ER001-C03', tagOriginal:'N/A', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-11', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'Pte Grua Sur', salaCodigo:'', tagOriginal:'', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-12', area:'Húmeda', areaEspecifica:'SX-EW', salaNombre:'Pte. Grua Norte', salaCodigo:'', tagOriginal:'', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-13', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNombre:'SS/EE ILS-PLS', salaCodigo:'3400-ER001-C00', tagOriginal:'1: presurizador 1 cto 13 3400-DPO86-C00', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-14', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNombre:'SS/EE ILS-PLS', salaCodigo:'3400-ER001-C01', tagOriginal:'2: presurizador 1 cto 13 3400-DPO86-C00', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-15', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', salaNombre:'SE Sub Estacion Enlace', salaCodigo:'', tagOriginal:'', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-16', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', salaNombre:'SE Principal 220 kV', salaCodigo:'', tagOriginal:'', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-17', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', salaNombre:'SE Planta Generación', salaCodigo:'', tagOriginal:'', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
-  { id:'PZ-HUM-18', area:'Húmeda', areaEspecifica:'Administracion', salaNombre:'Sala Control TICA', salaCodigo:'', tagOriginal:'', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'Detectado en levantamiento 18-02-2024 — sin marca/modelo registrado ("SIN INF")', fallasInicial:'' },
+  { id:'PZ-CHA-01', area:'Chancado', areaEspecifica:'Chancado', marca:'', modelo:'', salaNombre:'SS/EE Primario', salaCodigo:'2000-EE-001-C01', tagOriginal:'2000-EE001-DP3-C01', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-CHA-02', area:'Chancado', areaEspecifica:'Chancado', marca:'', modelo:'', salaNombre:'SS/EE Secundario / Terciario', salaCodigo:'2000-EE-002-C01', tagOriginal:'2000-EE002-DP3-C01', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-CHA-03', area:'Chancado', areaEspecifica:'Aglomerado', marca:'', modelo:'', salaNombre:'SS/EE Variadores ER101', salaCodigo:'3100-ER101-C02', tagOriginal:'3220-HV031-C02', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'REQUIERE CAMBIO', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-CHA-04', area:'Chancado', areaEspecifica:'Aglomerado', marca:'', modelo:'', salaNombre:'SS/EE LP1', salaCodigo:'3100-ER001-C02', tagOriginal:'3100-HV011-C02', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'REQUIERE CAMBIO', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-CHA-05', area:'Chancado', areaEspecifica:'Chancado', marca:'Bomaksan', modelo:'Wally-50', salaNombre:'Sala Eléctrica Colectores de Polvo', salaCodigo:'', tagOriginal:'', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'Representante en Chile: ASIREP. Jet-pulse autolimpiante, filtro cartucho 50 m² (F9/MERV16), caudal máx. 3.000 m³/h, compresor de aire integrado (170 L, 1 HP, 6 bar), 230V-50Hz (opc. 380V), 370 kg, 800x750x2450mm.', fallasInicial:'' },
+  { id:'PZ-API-01', area:'Apilamiento', areaEspecifica:'Apilamiento', marca:'', modelo:'', salaNombre:'Cabina Apilamiento', salaCodigo:'OPERADOR', tagOriginal:'', estado:'Pendiente de instalar', pendienteInstalar:true, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-API-02', area:'Apilamiento', areaEspecifica:'Apilamiento', marca:'', modelo:'', salaNombre:'PUENTE ME013', salaCodigo:'ER-003', tagOriginal:'3230-HV041-C02', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-API-03', area:'Apilamiento', areaEspecifica:'Apilamiento', marca:'', modelo:'', salaNombre:'TRIPPER CAR 2', salaCodigo:'ER-004', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-RIP-01', area:'Ripios', areaEspecifica:'Ripios', marca:'', modelo:'', salaNombre:'Cabina Rotopala', salaCodigo:'OPERADOR', tagOriginal:'N/A', estado:'Pendiente de instalar', pendienteInstalar:true, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-RIP-02', area:'Ripios', areaEspecifica:'Ripios', marca:'', modelo:'', salaNombre:'ROTOPALA', salaCodigo:'ER-005', tagOriginal:'3310-HV051-C02', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-RIP-03', area:'Ripios', areaEspecifica:'Ripios', marca:'', modelo:'', salaNombre:'PUENTE CV016', salaCodigo:'ER-006', tagOriginal:'3320-HV071-C02', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-RIP-04', area:'Ripios', areaEspecifica:'Ripios', marca:'', modelo:'', salaNombre:'SS/EE CV017 LP-2', salaCodigo:'ER-009', tagOriginal:'3300-HV91-C02', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-RIP-05', area:'Ripios', areaEspecifica:'Ripios', marca:'', modelo:'', salaNombre:'SS/EE Cola CV019', salaCodigo:'ER-010', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-RIP-06', area:'Ripios', areaEspecifica:'Ripios', marca:'', modelo:'', salaNombre:'SS/EE Cola CV019/020', salaCodigo:'ER-011', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-RIP-07', area:'Ripios', areaEspecifica:'Ripios', marca:'', modelo:'', salaNombre:'TRIPPER CAR 3', salaCodigo:'ER-012', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-RIP-08', area:'Ripios', areaEspecifica:'Ripios', marca:'', modelo:'', salaNombre:'Spreader', salaCodigo:'ER-013', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'SIN PLAN MTTO', fallasInicial:'' },
+  { id:'PZ-RIP-09', area:'Ripios', areaEspecifica:'Ripios', marca:'', modelo:'', salaNombre:'Cabina Spreader', salaCodigo:'CABINA', tagOriginal:'', estado:'Pendiente de instalar', pendienteInstalar:true, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-01', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'SS/EE Tren A', salaCodigo:'4100-ER001-C03', tagOriginal:'CB10', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-02', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'SS/EE Tren B', salaCodigo:'4100-ER002-C03', tagOriginal:'CB10', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-03', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'SS/FF Rectificador Sur', salaCodigo:'SALA FUERZA', tagOriginal:'', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-04', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'SS/EE Rectificador Sur', salaCodigo:'SALA ELECTRICA', tagOriginal:'CB03', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-05', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'SS/EW', salaCodigo:'4300-ER001-C03', tagOriginal:'', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-06', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'SS/FF MRDC', salaCodigo:'4300-WS001-C03', tagOriginal:'CB02', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-07', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'SS/CC MRDC GABINETE ROBOT', salaCodigo:'', tagOriginal:'N/A', estado:'Pendiente de instalar', pendienteInstalar:true, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-08', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'SS/FF Rectificador Norte', salaCodigo:'SALA FURZA', tagOriginal:'', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-09', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'SS/EE Rectificador Norte', salaCodigo:'SALA ELECTRICA', tagOriginal:'CB03', estado:'Fuera de servicio (a habilitar en el corto plazo)', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-10', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'SS/EE Patio de Estanques', salaCodigo:'4200-ER001-C03', tagOriginal:'N/A', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-11', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'Pte Grua Sur', salaCodigo:'', tagOriginal:'', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-12', area:'Húmeda', areaEspecifica:'SX-EW', marca:'', modelo:'', salaNombre:'Pte. Grua Norte', salaCodigo:'', tagOriginal:'', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-13', area:'Húmeda', areaEspecifica:'Lixiviacion', marca:'', modelo:'', salaNombre:'SS/EE ILS-PLS', salaCodigo:'3400-ER001-C00', tagOriginal:'1: presurizador 1 cto 13 3400-DPO86-C00', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-14', area:'Húmeda', areaEspecifica:'Lixiviacion', marca:'', modelo:'', salaNombre:'SS/EE ILS-PLS', salaCodigo:'3400-ER001-C01', tagOriginal:'2: presurizador 1 cto 13 3400-DPO86-C00', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-15', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', marca:'', modelo:'', salaNombre:'SE Sub Estacion Enlace', salaCodigo:'', tagOriginal:'', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-16', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', marca:'', modelo:'', salaNombre:'SE Principal 220 kV', salaCodigo:'', tagOriginal:'', estado:'Operativo', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
+  { id:'PZ-HUM-17', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', marca:'', modelo:'', salaNombre:'SE Planta Generación', salaCodigo:'', tagOriginal:'', estado:'Estado desconocido — por verificar en terreno', pendienteInstalar:false, recomendacionInicial:'', detalleInicial:'', fallasInicial:'' },
 ];
 
 const PRESURIZADORES_DEFAULT_VERSION = 2; // subir en 1 si PRESURIZADORES_DEFAULT cambia
-// v2: se agrega PZ-HUM-18 (Sala Control TICA / Administración), detectado en el levantamiento 18-02-2024.
 
 // Pauta de Mantención de Presurizadores EPA/HEPA — genérica (un solo checklist para
 // todos los presurizadores, a diferencia de Clima que varía por tipo de equipo).
@@ -3508,7 +3507,7 @@ const PAUTA_PRESURIZADORES = [
     { texto:'Condición final del presurizador registrada.', fotoObligatoria:true }
   ] },
 ];
-const AREA_CODES = { "Chancado": "CHA", "Apilamiento": "API", "Ripios": "RIP", "Húmeda": "HUM", "Truckshop": "TRK", "Salas de Hidratación": "HID" };
+const AREA_CODES = { "Chancado": "CHA", "Apilamiento": "API", "Ripios": "RIP", "Húmeda": "HUM", "Truckshop": "TRK" };
 
 const TIPOS_CLIMA = [
   { key:'mochila', label:'Mochila' },
@@ -3521,86 +3520,79 @@ const TIPOS_CLIMA = [
 function tipoLabelFor(key){ const t = TIPOS_CLIMA.find(t=>t.key===key); return t ? t.label : key; }
 
 const EQUIPOS_DEFAULT = [
-  { id:'CL-CHA-01-1', area:'Chancado', areaEspecifica:'Chancado', salaNum:1, salaLabel:'Chancado · Sala N°1', tag:1, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:240000, gas:'R-410A', modelo:'WSH200EDRO16', serie:'211510991D', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Instalado 20-10-2021' },
-  { id:'CL-CHA-01-2', area:'Chancado', areaEspecifica:'Chancado', salaNum:1, salaLabel:'Chancado · Sala N°1', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'Levantamiento 18-02-2024 registraba aquí un TRANE SWMB050HD R-407C con falla (fatiga de material, requería cambio) — parece que ya se reemplazó por este BARD R-410A; confirmar en terreno' },
-  { id:'CL-CHA-01-3', area:'Chancado', areaEspecifica:'Chancado', salaNum:1, salaLabel:'Chancado · Sala N°1', tag:3, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:72000, gas:'R-410A', modelo:'W72AB-F0Z8', serie:'405P180614596-02', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Instalado 28-10-2022' },
-  { id:'CL-CHA-02-1', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:1, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:120000, gas:'R-410A', modelo:'WSG120EDROA', serie:'', estadoInicial:'Fuera de servicio (18-02-2024)', recomendacionInicial:'Requiere reparación', detalleInicial:'Circuito 1 cortado' },
-  { id:'CL-CHA-02-2', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:2, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:120000, gas:'R-410A', modelo:'WSG120EDROA', serie:'122610593D', estadoInicial:'Fuera de servicio (18-02-2024)', recomendacionInicial:'Requiere cambio', detalleInicial:'Fatiga de material' },
-  { id:'CL-CHA-02-3', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:3, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:240000, gas:'R-410A', modelo:'WSH200EDROOBC', serie:'12281011OD', estadoInicial:'Operativo 50% (18-02-2024)', recomendacionInicial:'Requiere reparación', detalleInicial:'Fuga de gas refrigerante, circuito 2' },
-  { id:'CL-CHA-02-4', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:4, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:240000, gas:'R-410A', modelo:'WSH200EDROOBC', serie:'221710703D', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Instalado 11-11-2022' },
-  { id:'CL-CHA-02-5', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:5, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:240000, gas:'R-410A', modelo:'WSH200EDROOBC', serie:'124411130L', estadoInicial:'Fuera de servicio (18-02-2024)', recomendacionInicial:'Requiere cambio', detalleInicial:'Fatiga de material' },
-  { id:'CL-CHA-02-6', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:6, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'', estadoInicial:'Fuera de servicio (18-02-2024)', recomendacionInicial:'Falta componentes', detalleInicial:'Sin componentes' },
-  { id:'CL-CHA-03-1', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:1, tipo:'precision', tipoLabel:'Precisión', marca:'BLUE BOX', potenciaBTU:240000, gas:'R-410A', modelo:'DATATECH BTD UEDA 66.2', serie:'SB10257054', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Instalado 22-06-2023 · potencia corregida de 440.000 a 240.000 BTU según placa (levantamiento 18-02-2024)' },
-  { id:'CL-CHA-03-2', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:2, tipo:'precision', tipoLabel:'Precisión', marca:'BLUE BOX', potenciaBTU:240000, gas:'R-410A', modelo:'DATATECH BTD UEDA 66.3', serie:'SB10257053', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Instalado 22-06-2023 · potencia corregida de 440.000 a 240.000 BTU según placa (levantamiento 18-02-2024)' },
-  { id:'CL-CHA-03-3', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:3, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'GREE', potenciaBTU:48000, gas:'R-410A', modelo:'GUHN48NM3HO', serie:'63270050283', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Instalado 20-03-2022' },
-  { id:'CL-CHA-03-4', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:4, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'ANWO', potenciaBTU:48000, gas:'R-410A', modelo:'GEDA48E-DOO-N2', serie:'63239904197', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Instalado 07-05-2022 · potencia corregida de 36.000 a 48.000 BTU según modelo (levantamiento 18-02-2024)' },
-  { id:'CL-CHA-04-1', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:4, salaLabel:'Aglomerado · Sala N°4', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'KE-H36/5R1', serie:'WNJ55830200', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Instalado 09-04-2022' },
-  { id:'CL-API-01-1', area:'Apilamiento', areaEspecifica:'Cabina Operador', salaNum:1, salaLabel:'Apilamiento · Sala N°1 (Cabina Operador)', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'ANWO', potenciaBTU:24000, gas:'R-410A', modelo:'GES24E-INV', serie:'E4E781000470', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-API-02-1', area:'Apilamiento', areaEspecifica:'SS/EE Carro Tripper 2', salaNum:2, salaLabel:'Apilamiento · Sala N°2 (SS/EE Carro Tripper 2)', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'KDU-36HWN1', serie:'340E07110041A090150043', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-API-03-1', area:'Apilamiento', areaEspecifica:'SS/EE Puente CV013', salaNum:3, salaLabel:'Apilamiento · Sala N°3 (SS/EE Puente CV013)', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'KPC-36HRN1', serie:'Ilegible en placa', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Ficha 18-02-2024 indicaba cambio programado semana 40 (2024) — confirmar si ya se realizó' },
-  { id:'CL-API-03-2', area:'Apilamiento', areaEspecifica:'SS/EE Puente CV013', salaNum:3, salaLabel:'Apilamiento · Sala N°3 (SS/EE Puente CV013)', tag:2, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'KPC-36HRN1', serie:'Ilegible en placa', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Ficha 18-02-2024 indicaba cambio programado semana 40 (2024) — confirmar si ya se realizó' },
-  { id:'CL-API-04-1', area:'Apilamiento', areaEspecifica:'SS/EE Puente CV016', salaNum:4, salaLabel:'Apilamiento · Sala N°4 (SS/EE Puente CV016)', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'KDU-H36/SR1', serie:'WNJ558278204N008', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-API-04-2', area:'Apilamiento', areaEspecifica:'SS/EE Puente CV016', salaNum:4, salaLabel:'Apilamiento · Sala N°4 (SS/EE Puente CV016)', tag:2, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'AIRWELL', potenciaBTU:36000, gas:'R-410A', modelo:'AWAU-YUDO30H11', serie:'75P062788', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-API-05-1', area:'Apilamiento', areaEspecifica:'SS/EE Rotopala', salaNum:5, salaLabel:'Apilamiento · Sala N°5 (SS/EE Rotopala)', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'KDU-H36/SR1', serie:'WNJ558278204N004', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-API-06-1', area:'Apilamiento', areaEspecifica:'Cabina Operador', salaNum:6, salaLabel:'Apilamiento · Sala N°6 (Cabina Operador)', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'ANWO', potenciaBTU:24000, gas:'R-410A', modelo:'GES24E-INV', serie:'E-013-03-10164', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-RIP-01-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:1, salaLabel:'Ripios · Sala N°1', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'Levantamiento 18-02-2024: hay 4 salas KHONE 36.000 BTU idénticas en Ripios (CV017 LP-2, Cola Correa 019/020, Tripper 3, Spreader) y no quedó claro cuál N° de sala corresponde a cuál — confirmar en terreno para completar modelo/serie' },
-  { id:'CL-RIP-02-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:2, salaLabel:'Ripios · Sala N°2', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-RIP-03-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:3, salaLabel:'Ripios · Sala N°3', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-RIP-04-2', area:'Ripios', areaEspecifica:'Ripios', salaNum:4, salaLabel:'Ripios · Sala N°4', tag:2, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'AIRWELL', potenciaBTU:36000, gas:'R-410A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'No aparece en el levantamiento 18-02-2024 (Correas Transp.) — sin modelo/serie de esa fuente' },
-  { id:'CL-RIP-05-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:5, salaLabel:'Ripios · Sala N°5', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'ANWO', potenciaBTU:36000, gas:'R-410A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'No aparece en el levantamiento 18-02-2024 (Correas Transp.) — sin modelo/serie de esa fuente' },
-  { id:'CL-RIP-06-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:6, salaLabel:'Ripios · Sala N°6', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'KENDAL', potenciaBTU:12000, gas:'R-410A', modelo:'N2ASM-12MDSUE', serie:'A18748216904W00029', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'SS/EE Cola CV019' },
-  { id:'CL-RIP-07-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:7, salaLabel:'Ripios · Sala N°7', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'Levantamiento 18-02-2024: hay 4 salas KHONE 36.000 BTU idénticas en Ripios (CV017 LP-2, Cola Correa 019/020, Tripper 3, Spreader) y no quedó claro cuál N° de sala corresponde a cuál — confirmar en terreno para completar modelo/serie' },
-  { id:'CL-RIP-08-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:8, salaLabel:'Ripios · Sala N°8', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-RIP-09-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:9, salaLabel:'Ripios · Sala N°9', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-RIP-10-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:10, salaLabel:'Ripios · Sala N°10', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'ANWO', potenciaBTU:36000, gas:'R-410A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'Posible Cabina Spreader (ANWO GES24E-INV) — el levantamiento 18-02-2024 registra ese equipo en 12.000 BTU y el mismo modelo aparece en 24.000 BTU en Apilamiento; ninguno calza con los 36.000 BTU actuales. Confirmar potencia real en terreno' },
-  { id:'CL-HUM-01-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:1, salaLabel:'SX-EW · Sala N°1', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326A143092316-02', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-01-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:1, salaLabel:'SX-EW · Sala N°1', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326A143092334-02', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-02-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:2, salaLabel:'SX-EW · Sala N°2', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326A143092327-02', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-02-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:2, salaLabel:'SX-EW · Sala N°2', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326A14309231-03', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-03-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:3, salaLabel:'SX-EW · Sala N°3', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'' },
-  { id:'CL-HUM-03-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:3, salaLabel:'SX-EW · Sala N°3', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Trane', potenciaBTU:60000, gas:'R-407C', modelo:'SWMB050HD', serie:'', estadoInicial:'Fuera de servicio (18-02-2024)', recomendacionInicial:'Requiere cambio', detalleInicial:'Fatiga de material' },
-  { id:'CL-HUM-04-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:4, salaLabel:'SX-EW · Sala N°4', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F08', serie:'', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'SS/EE Rectificador Sur (Sala MT)' },
-  { id:'CL-HUM-05-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:5, salaLabel:'SX-EW · Sala N°5', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326A143092320-02', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-05-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:5, salaLabel:'SX-EW · Sala N°5', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326A143092318-02', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-06-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:6, salaLabel:'SX-EW · Sala N°6', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326A143133817-02', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-07-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:7, salaLabel:'SX-EW · Sala N°7', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:36000, gas:'R-410A', modelo:'W36A2-F02', serie:'311F133019995-02', estadoInicial:'Fuera de servicio (18-02-2024)', recomendacionInicial:'', detalleInicial:'Ficha decía "equipos operativos" pese al estado F/S — confirmar en terreno' },
-  { id:'CL-HUM-07-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:7, salaLabel:'SX-EW · Sala N°7', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:36000, gas:'R-410A', modelo:'W36A2-F03', serie:'311M173490467-03', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-08-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:8, salaLabel:'SX-EW · Sala N°8', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'Vesta', potenciaBTU:12000, gas:'R-32A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-09-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:9, salaLabel:'SX-EW · Sala N°9', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'SS/FF Rectificador Norte' },
-  { id:'CL-HUM-09-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:9, salaLabel:'SX-EW · Sala N°9', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Trane', potenciaBTU:60000, gas:'R-407C', modelo:'SWMB050HD', serie:'B091355789', estadoInicial:'Operativo', recomendacionInicial:'Requiere cambio', detalleInicial:'Fatiga de material — SS/FF Rectificador Norte' },
-  { id:'CL-HUM-10-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:10, salaLabel:'SX-EW · Sala N°10', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F08', serie:'', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'SS/EE Rectificador Norte (Sala MT)' },
-  { id:'CL-HUM-11-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:11, salaLabel:'SX-EW · Sala N°11', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F08', serie:'', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'SS/EE Patio de Estanques' },
-  { id:'CL-HUM-11-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:11, salaLabel:'SX-EW · Sala N°11', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:72000, gas:'R-410A', modelo:'W72AB-F0Z', serie:'405P183614596-02', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Instalado 07-01-2022 · SS/EE Patio de Estanques' },
-  { id:'CL-HUM-11-3', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:11, salaLabel:'SX-EW · Sala N°11', tag:3, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F08', serie:'', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'SS/EE Patio de Estanques' },
-  { id:'CL-HUM-11-4', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:11, salaLabel:'SX-EW · Sala N°11', tag:4, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F08', serie:'', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'SS/EE Patio de Estanques' },
-  { id:'CL-HUM-12-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:12, salaLabel:'SX-EW · Sala N°12', tag:1, tipo:'ligero_1ton', tipoLabel:'Ligero 1TON', marca:'Lintern', potenciaBTU:12000, gas:'R-134A', modelo:'LHDE-12D', serie:'', estadoInicial:'Operativo', recomendacionInicial:'NUEVO', detalleInicial:'Instalado 04-01-2023 · Pte Grúa Sur' },
-  { id:'CL-HUM-13-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:13, salaLabel:'SX-EW · Sala N°13', tag:1, tipo:'ligero_1ton', tipoLabel:'Ligero 1TON', marca:'Lintern', potenciaBTU:12000, gas:'R-134A', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'Pte Grúa Norte · modelo ilegible en la placa (levantamiento 18-02-2024) — confirmar en terreno' },
-  { id:'CL-HUM-14-1', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326N163387897-02', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-14-2', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326F173432376-02', estadoInicial:'Operativo (18-02-2024)', recomendacionInicial:'Requiere cambio', detalleInicial:'Compresor deficiente' },
-  { id:'CL-HUM-14-3', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:3, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326F173432371-03', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-14-4', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:4, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A', modelo:'W60A2-F07', serie:'326F173432375-04', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-14-5', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:5, tipo:'mochila', tipoLabel:'Mochila', marca:'MARVAIR', potenciaBTU:60000, gas:'R-410A', modelo:'AVPA60ACE060NU-A2-100', serie:'HC-F133430-0-12', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-14-6', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:6, tipo:'mochila', tipoLabel:'Mochila', marca:'MARVAIR', potenciaBTU:60000, gas:'R-410A', modelo:'AVPA60ACE060NU-A2-100', serie:'HC-F133430-0-13', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-14-7', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:7, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'ANWO', potenciaBTU:48000, gas:'R-410A', modelo:'GEDA48E-DOO-N2', serie:'63239904197', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-14-8', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:8, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'ANWO', potenciaBTU:60000, gas:'R-410A', modelo:'GEDA60E-DOO-N2', serie:'63239904199', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HUM-15-1', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', salaNum:15, salaLabel:'Sub estacion Electrica · Sala N°15', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'KENDAL', potenciaBTU:18000, gas:'R-410A', modelo:'ASM-18MDSUE', serie:'', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'SE Sub Estación Enlace · el levantamiento 18-02-2024 anotó 12.000 BTU a mano, pero el propio modelo (ASM-18...) indica 18.000 — se mantiene el valor ya cargado' },
-  { id:'CL-HUM-16-1', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', salaNum:16, salaLabel:'Sub estacion Electrica · Sala N°16', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'ANWO', potenciaBTU:12000, gas:'R-410A', modelo:'GES18E-D00', serie:'832299422681', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'SE Principal 220 kV' },
-  { id:'CL-HUM-17-1', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', salaNum:17, salaLabel:'Sub estacion Electrica · Sala N°17', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A', modelo:'W60A1-F07', serie:'326P122972002-02', estadoInicial:'Operativo', recomendacionInicial:'', detalleInicial:'SE Planta Generación' },
-  { id:'CL-TRK-01-1', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-TRK-01-2', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-TRK-01-3', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:3, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-TRK-01-4', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:4, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-TRK-01-5', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:5, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-TRK-01-6', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:6, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-32', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-TRK-02-1', area:'Truckshop', areaEspecifica:'SSEE 5300', salaNum:2, salaLabel:'SSEE 5300 · Sala N°2', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-TRK-02-2', area:'Truckshop', areaEspecifica:'SSEE 5300', salaNum:2, salaLabel:'SSEE 5300 · Sala N°2', tag:2, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:24000, gas:'R-32', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-TRK-03-1', area:'Truckshop', areaEspecifica:'SSEE 5600', salaNum:3, salaLabel:'SSEE 5600 · Sala N°3', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-TRK-03-2', area:'Truckshop', areaEspecifica:'SSEE 5600', salaNum:3, salaLabel:'SSEE 5600 · Sala N°3', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-TRK-03-3', area:'Truckshop', areaEspecifica:'SSEE 5600', salaNum:3, salaLabel:'SSEE 5600 · Sala N°3', tag:3, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:24000, gas:'R-32', modelo:'', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'' },
-  { id:'CL-HID-01-1', area:'Salas de Hidratación', areaEspecifica:'SH ID Chile', salaNum:1, salaLabel:'Salas de Hidratación · Sala N°1 (SH ID Chile)', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'KHÖNE', potenciaBTU:9000, gas:'R-410A', modelo:'KSMI-09BC3', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'Sala móvil' },
-  { id:'CL-HID-02-1', area:'Salas de Hidratación', areaEspecifica:'SH NTC Sector Armado', salaNum:2, salaLabel:'Salas de Hidratación · Sala N°2 (SH NTC Sector Armado)', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'CLARK', potenciaBTU:9000, gas:'R-410A', modelo:'ITP-09HRE2', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'Sala móvil' },
-  { id:'CL-HID-03-1', area:'Salas de Hidratación', areaEspecifica:'SH NTC Sector Desarme', salaNum:3, salaLabel:'Salas de Hidratación · Sala N°3 (SH NTC Sector Desarme)', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'CLARK', potenciaBTU:9000, gas:'R-410A', modelo:'ITP-09HRE2', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'Sala móvil' },
-  { id:'CL-HID-04-1', area:'Salas de Hidratación', areaEspecifica:'SH Operadores Antucoya', salaNum:4, salaLabel:'Salas de Hidratación · Sala N°4 (SH Operadores Antucoya)', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'Sinot Air', potenciaBTU:9000, gas:'R-410A', modelo:'ECO-09HTT', serie:'', estadoInicial:'', recomendacionInicial:'', detalleInicial:'Sala fija' }
+  { id:'CL-CHA-01-1', area:'Chancado', areaEspecifica:'Chancado', salaNum:1, salaLabel:'Chancado · Sala N°1', tag:1, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:240000, gas:'R-410A' },
+  { id:'CL-CHA-01-2', area:'Chancado', areaEspecifica:'Chancado', salaNum:1, salaLabel:'Chancado · Sala N°1', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-CHA-01-3', area:'Chancado', areaEspecifica:'Chancado', salaNum:1, salaLabel:'Chancado · Sala N°1', tag:3, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:72000, gas:'R-410A' },
+  { id:'CL-CHA-02-1', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:1, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:120000, gas:'R-410A' },
+  { id:'CL-CHA-02-2', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:2, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:120000, gas:'R-410A' },
+  { id:'CL-CHA-02-3', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:3, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:240000, gas:'R-410A' },
+  { id:'CL-CHA-02-4', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:4, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:240000, gas:'R-410A' },
+  { id:'CL-CHA-02-5', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:5, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:240000, gas:'R-410A' },
+  { id:'CL-CHA-02-6', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:6, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-CHA-02-7', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2 (Sala Eléctrica Colectores de Polvo)', tag:7, tipo:'compacto', tipoLabel:'Compacto', marca:'SENDO', potenciaBTU:358000, gas:'R-410A', modelo:'SRT-CT1H105A1E' },
+  { id:'CL-CHA-03-1', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:1, tipo:'precision', tipoLabel:'Precisión', marca:'BLUE BOX', potenciaBTU:440000, gas:'R-410A' },
+  { id:'CL-CHA-03-2', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:2, tipo:'precision', tipoLabel:'Precisión', marca:'BLUE BOX', potenciaBTU:440000, gas:'R-410A' },
+  { id:'CL-CHA-03-3', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:3, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'GREE', potenciaBTU:48000, gas:'R-410A' },
+  { id:'CL-CHA-03-4', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:4, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'ANWO', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-CHA-04-1', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:4, salaLabel:'Aglomerado · Sala N°4', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'Khone', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-API-01-1', area:'Apilamiento', areaEspecifica:'Apilamiento', salaNum:1, salaLabel:'Apilamiento · Sala N°1', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-API-01-2', area:'Apilamiento', areaEspecifica:'Apilamiento', salaNum:1, salaLabel:'Apilamiento · Sala N°1', tag:2, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-API-02-1', area:'Apilamiento', areaEspecifica:'Apilamiento', salaNum:2, salaLabel:'Apilamiento · Sala N°2', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-API-03-1', area:'Apilamiento', areaEspecifica:'Apilamiento', salaNum:3, salaLabel:'Apilamiento · Sala N°3', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'ANWO', potenciaBTU:24000, gas:'R-410A' },
+  { id:'CL-RIP-01-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:1, salaLabel:'Ripios · Sala N°1', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'ANWO', potenciaBTU:24000, gas:'R-410A' },
+  { id:'CL-RIP-02-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:2, salaLabel:'Ripios · Sala N°2', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-RIP-03-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:3, salaLabel:'Ripios · Sala N°3', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-RIP-04-2', area:'Ripios', areaEspecifica:'Ripios', salaNum:4, salaLabel:'Ripios · Sala N°4', tag:2, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'AIRWELL', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-RIP-05-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:5, salaLabel:'Ripios · Sala N°5', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'ANWO', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-RIP-06-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:6, salaLabel:'Ripios · Sala N°6', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'KENDAL', potenciaBTU:12000, gas:'R-410A' },
+  { id:'CL-RIP-07-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:7, salaLabel:'Ripios · Sala N°7', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-RIP-08-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:8, salaLabel:'Ripios · Sala N°8', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-RIP-09-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:9, salaLabel:'Ripios · Sala N°9', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-RIP-10-1', area:'Ripios', areaEspecifica:'Ripios', salaNum:10, salaLabel:'Ripios · Sala N°10', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'ANWO', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-HUM-01-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:1, salaLabel:'SX-EW · Sala N°1', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-01-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:1, salaLabel:'SX-EW · Sala N°1', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-02-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:2, salaLabel:'SX-EW · Sala N°2', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-02-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:2, salaLabel:'SX-EW · Sala N°2', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-03-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:3, salaLabel:'SX-EW · Sala N°3', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-03-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:3, salaLabel:'SX-EW · Sala N°3', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Trane', potenciaBTU:60000, gas:'R-407C' },
+  { id:'CL-HUM-04-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:4, salaLabel:'SX-EW · Sala N°4', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-05-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:5, salaLabel:'SX-EW · Sala N°5', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-05-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:5, salaLabel:'SX-EW · Sala N°5', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-06-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:6, salaLabel:'SX-EW · Sala N°6', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-07-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:7, salaLabel:'SX-EW · Sala N°7', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-HUM-07-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:7, salaLabel:'SX-EW · Sala N°7', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-HUM-08-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:8, salaLabel:'SX-EW · Sala N°8', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'Vesta', potenciaBTU:12000, gas:'R-32A' },
+  { id:'CL-HUM-09-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:9, salaLabel:'SX-EW · Sala N°9', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-09-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:9, salaLabel:'SX-EW · Sala N°9', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Trane', potenciaBTU:60000, gas:'R-407C' },
+  { id:'CL-HUM-10-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:10, salaLabel:'SX-EW · Sala N°10', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-11-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:11, salaLabel:'SX-EW · Sala N°11', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-11-2', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:11, salaLabel:'SX-EW · Sala N°11', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:72000, gas:'R-410A' },
+  { id:'CL-HUM-11-3', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:11, salaLabel:'SX-EW · Sala N°11', tag:3, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-11-4', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:11, salaLabel:'SX-EW · Sala N°11', tag:4, tipo:'mochila', tipoLabel:'Mochila', marca:'Bard', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-12-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:12, salaLabel:'SX-EW · Sala N°12', tag:1, tipo:'ligero_1ton', tipoLabel:'Ligero 1TON', marca:'Lintern', potenciaBTU:12000, gas:'R-134A' },
+  { id:'CL-HUM-13-1', area:'Húmeda', areaEspecifica:'SX-EW', salaNum:13, salaLabel:'SX-EW · Sala N°13', tag:1, tipo:'ligero_1ton', tipoLabel:'Ligero 1TON', marca:'Lintern', potenciaBTU:12000, gas:'R-134A' },
+  { id:'CL-HUM-14-1', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-14-2', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-14-3', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:3, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-14-4', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:4, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-14-5', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:5, tipo:'mochila', tipoLabel:'Mochila', marca:'MARVAIR', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-14-6', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:6, tipo:'mochila', tipoLabel:'Mochila', marca:'MARVAIR', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-14-7', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:7, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'ANWO', potenciaBTU:48000, gas:'R-410A' },
+  { id:'CL-HUM-14-8', area:'Húmeda', areaEspecifica:'Lixiviacion', salaNum:14, salaLabel:'Lixiviacion · Sala N°14', tag:8, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'ANWO', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-HUM-15-1', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', salaNum:15, salaLabel:'Sub estacion Electrica · Sala N°15', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'KENDAL', potenciaBTU:18000, gas:'R-410A' },
+  { id:'CL-HUM-16-1', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', salaNum:16, salaLabel:'Sub estacion Electrica · Sala N°16', tag:1, tipo:'split_muro', tipoLabel:'Split Muro', marca:'ANWO', potenciaBTU:12000, gas:'R-410A' },
+  { id:'CL-HUM-17-1', area:'Húmeda', areaEspecifica:'Sub estacion Electrica', salaNum:17, salaLabel:'Sub estacion Electrica · Sala N°17', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A' },
+  { id:'CL-TRK-01-1', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407' },
+  { id:'CL-TRK-01-2', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407' },
+  { id:'CL-TRK-01-3', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:3, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407' },
+  { id:'CL-TRK-01-4', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:4, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407' },
+  { id:'CL-TRK-01-5', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:5, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407' },
+  { id:'CL-TRK-01-6', area:'Truckshop', areaEspecifica:'SSEE 5000', salaNum:1, salaLabel:'SSEE 5000 · Sala N°1 (Taller de Camiones)', tag:6, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-32' },
+  { id:'CL-TRK-02-1', area:'Truckshop', areaEspecifica:'SSEE 5300', salaNum:2, salaLabel:'SSEE 5300 · Sala N°2', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407' },
+  { id:'CL-TRK-02-2', area:'Truckshop', areaEspecifica:'SSEE 5300', salaNum:2, salaLabel:'SSEE 5300 · Sala N°2', tag:2, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:24000, gas:'R-32' },
+  { id:'CL-TRK-03-1', area:'Truckshop', areaEspecifica:'SSEE 5600', salaNum:3, salaLabel:'SSEE 5600 · Sala N°3', tag:1, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407' },
+  { id:'CL-TRK-03-2', area:'Truckshop', areaEspecifica:'SSEE 5600', salaNum:3, salaLabel:'SSEE 5600 · Sala N°3', tag:2, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-407' },
+  { id:'CL-TRK-03-3', area:'Truckshop', areaEspecifica:'SSEE 5600', salaNum:3, salaLabel:'SSEE 5600 · Sala N°3', tag:3, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:24000, gas:'R-32' }
 ];
 
 // Tipos de respuesta por ítem — permite que preguntas de sí/no o legibilidad
@@ -4149,15 +4141,10 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, m => ({'&':'&am
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function nowTimeHHMM(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
 
-const EQUIPOS_PIN = '2468'; // clave fija del maestro de equipos (técnicos, supervisores, altas/bajas) — CAMBIAR antes de entregar la app a Elecmain
+const EQUIPOS_PIN = '1987'; // clave fija del maestro de equipos (técnicos, supervisores, altas/bajas) — la cambia solo Mario, aquí en el código
 const EQUIPOS_DEFAULT_VERSION = 2; // subir en 1 cada vez que EQUIPOS_DEFAULT cambie
-// v2 (levantamiento 18-02-2024, hoja RESUMEN): se agregan modelo/serie/estado inicial a casi
-// todo el maestro, se corrige la potencia de 2 equipos en Aglomerado, y se reestructura
-// Apilamiento completo: pasa de 4 equipos "genéricos" en 3 salas a los 8 equipos reales en
-// sus 6 salas con nombre propio (Cabina Operador x2, Carro Tripper 2, Puente CV013, Puente
-// CV016, Rotopala). Los 4 IDs viejos de Apilamiento quedan obsoletos porque ya no representan
-// el mismo equipo físico que su reemplazo homónimo.
-const OBSOLETE_IDS_V2 = ['CL-API-01-1', 'CL-API-01-2', 'CL-API-02-1', 'CL-API-03-1'];
+// Sin IDs obsoletos aún (primera versión del maestro de Clima).
+const OBSOLETE_IDS_V2 = [];
 
 async function loadEquipos(){
   const saved = await storage.get('equipos_master');
@@ -4488,8 +4475,8 @@ function applyEquipoToForm(equipo){
     document.getElementById('f_gasLabelText').textContent = 'Detalle / recomendación inicial';
     document.getElementById('f_potenciaWrap').style.display = 'none';
 
-    document.getElementById('f_marca').value = '';
-    document.getElementById('f_modelo').value = '';
+    document.getElementById('f_marca').value = equipo && equipo.marca ? equipo.marca : '';
+    document.getElementById('f_modelo').value = equipo && equipo.modelo ? equipo.modelo : '';
     document.getElementById('f_serie').value = '';
     document.getElementById('f_interno').value = equipo ? equipo.id : '';
     document.getElementById('f_ubicacion').value = equipo ? `${equipo.areaEspecifica} — ${equipo.salaNombre}` : '';
@@ -4508,10 +4495,8 @@ function applyEquipoToForm(equipo){
   document.getElementById('f_potenciaWrap').style.display = '';
 
   document.getElementById('f_marca').value = equipo ? equipo.marca : '';
-  // se precargan desde el maestro (levantamiento 18-02-2024) como punto de partida — el técnico
-  // los puede corregir si el equipo físico ya se cambió y no coincide con lo registrado.
-  document.getElementById('f_modelo').value = equipo ? (equipo.modelo || '') : '';
-  document.getElementById('f_serie').value = equipo ? (equipo.serie || '') : '';
+  document.getElementById('f_modelo').value = equipo && equipo.modelo ? equipo.modelo : '';
+  document.getElementById('f_serie').value = '';
   document.getElementById('f_interno').value = equipo ? equipo.id : '';
   document.getElementById('f_ubicacion').value = equipo ? equipo.salaLabel : '';
   document.getElementById('f_tipoLabel').value = equipo ? equipo.tipoLabel : '';
@@ -5852,7 +5837,7 @@ function renderEquipList(){
       html += `<div class="hist-item" data-editeq-open="${esc(e.id)}">
         <div class="hist-main">
           <div class="t1">N°${e.tag} — ${esc(e.tipoLabel)} (${esc(e.salaLabel)})</div>
-          <div class="t2">${esc(e.marca)}${e.modelo ? ' '+esc(e.modelo) : ''} · ${Number(e.potenciaBTU).toLocaleString('es-CL')} BTU · ${esc(e.gas)}</div>
+          <div class="t2">${esc(e.marca)} · ${Number(e.potenciaBTU).toLocaleString('es-CL')} BTU · ${esc(e.gas)}</div>
         </div>
         <button class="hist-del" data-verqr="${esc(e.id)}" style="background:var(--na-bg);color:var(--steel);margin-right:6px;">📱</button>
         <button class="hist-del" data-editeq="${esc(e.id)}" style="background:var(--safety);color:var(--safety-ink);margin-right:6px;">✏️</button>
@@ -5984,10 +5969,11 @@ function renderPresurizadorList(){
     if(!list.length) return;
     html += `<div class="section-bar" style="margin:0;">${esc(area.toUpperCase())} (${list.length})</div>`;
     list.forEach(p => {
+      const marcaModelo = [p.marca, p.modelo].filter(Boolean).join(' ');
       html += `<div class="hist-item" data-editpz-open="${esc(p.id)}">
         <div class="hist-main">
           <div class="t1">${esc(p.salaNombre)}</div>
-          <div class="t2">${esc(p.areaEspecifica)} · ${esc(p.estado)}</div>
+          <div class="t2">${esc(p.areaEspecifica)}${marcaModelo ? ' · ' + esc(marcaModelo) : ''} · ${esc(p.estado)}</div>
         </div>
         <button class="hist-del" data-verqrpz="${esc(p.id)}" style="background:var(--na-bg);color:var(--steel);margin-right:6px;">📱</button>
         <button class="hist-del" data-editpz="${esc(p.id)}" style="background:var(--safety);color:var(--safety-ink);margin-right:6px;">✏️</button>
@@ -6015,6 +6001,8 @@ function startEditPz(id){
   document.getElementById('pzArea').value = p.area || '';
   document.getElementById('pzAreaEspecifica').value = p.areaEspecifica || '';
   document.getElementById('pzSalaNombre').value = p.salaNombre || '';
+  document.getElementById('pzMarca').value = p.marca || '';
+  document.getElementById('pzModelo').value = p.modelo || '';
   document.getElementById('pzEstado').value = p.estado || 'Operativo';
   document.getElementById('pzObservacion').value = [p.recomendacionInicial, p.detalleInicial, p.fallasInicial].filter(Boolean).join(' · ');
   document.getElementById('addPzCardTitle').textContent = 'Editando: ' + p.salaNombre;
@@ -6024,7 +6012,7 @@ function startEditPz(id){
 }
 function cancelarEdicionPz(){
   editingPzId = null;
-  ['pzAreaEspecifica','pzSalaNombre','pzObservacion'].forEach(id => document.getElementById(id).value = '');
+  ['pzAreaEspecifica','pzSalaNombre','pzMarca','pzModelo','pzObservacion'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('pzArea').value = '';
   document.getElementById('pzEstado').value = 'Operativo';
   document.getElementById('addPzCardTitle').textContent = 'Agregar presurizador';
@@ -6035,6 +6023,8 @@ document.getElementById('addPzBtn').addEventListener('click', async () => {
   const area = document.getElementById('pzArea').value;
   const areaEspecifica = document.getElementById('pzAreaEspecifica').value.trim();
   const salaNombre = document.getElementById('pzSalaNombre').value.trim();
+  const marca = document.getElementById('pzMarca').value.trim();
+  const modelo = document.getElementById('pzModelo').value.trim();
   const estado = document.getElementById('pzEstado').value;
   const observacion = document.getElementById('pzObservacion').value.trim();
   if(!area || !salaNombre){ toast('Completa al menos Área y Nombre de la sala'); return; }
@@ -6042,7 +6032,7 @@ document.getElementById('addPzBtn').addEventListener('click', async () => {
   if(editingPzId){
     const p = presurizadores.find(x => x.id === editingPzId);
     if(p){
-      Object.assign(p, { area, areaEspecifica, salaNombre, estado, pendienteInstalar: estado === 'Pendiente de instalar',
+      Object.assign(p, { area, areaEspecifica, salaNombre, marca, modelo, estado, pendienteInstalar: estado === 'Pendiente de instalar',
         recomendacionInicial: observacion, detalleInicial: '', fallasInicial: '' });
       await savePresurizadores();
       toast('✓ Presurizador actualizado');
@@ -6055,7 +6045,7 @@ document.getElementById('addPzBtn').addEventListener('click', async () => {
   const areaCode = AREA_CODES[area] || 'GEN';
   const n = presurizadores.filter(p => p.area === area).length + 1;
   const id = `PZ-${areaCode}-${String(n).padStart(2,'0')}`;
-  presurizadores.push({ id, area, areaEspecifica, salaNombre, salaCodigo:'', tagOriginal:'', estado,
+  presurizadores.push({ id, area, areaEspecifica, salaNombre, marca, modelo, salaCodigo:'', tagOriginal:'', estado,
     pendienteInstalar: estado === 'Pendiente de instalar', recomendacionInicial: observacion, detalleInicial:'', fallasInicial:'' });
   await savePresurizadores();
   cancelarEdicionPz();
@@ -6556,7 +6546,7 @@ document.getElementById('fileImport').addEventListener('change', (e) => { if(e.t
 /* ============================================================
    INIT
    ============================================================ */
-const APP_VERSION = 'clima-v4'; // subir junto con la versión del service-worker en cada entrega
+const APP_VERSION = 'clima-v3'; // subir junto con la versión del service-worker en cada entrega
 
 async function init(){
   document.getElementById('appVersion').textContent = APP_VERSION;
