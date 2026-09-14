@@ -3529,12 +3529,12 @@ const EQUIPOS_DEFAULT = [
   { id:'CL-CHA-02-4', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:4, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:240000, gas:'R-410A' },
   { id:'CL-CHA-02-5', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:5, tipo:'compacto', tipoLabel:'Compacto', marca:'Trane', potenciaBTU:240000, gas:'R-410A' },
   { id:'CL-CHA-02-6', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2', tag:6, tipo:'mochila', tipoLabel:'Mochila', marca:'BARD', potenciaBTU:60000, gas:'R-410A' },
-  { id:'CL-CHA-02-7', area:'Chancado', areaEspecifica:'Chancado', salaNum:2, salaLabel:'Chancado · Sala N°2 (Sala Eléctrica Colectores de Polvo)', tag:7, tipo:'compacto', tipoLabel:'Compacto', marca:'SENDO', potenciaBTU:358000, gas:'R-410A', modelo:'SRT-CT1H105A1E' },
-  { id:'CL-CHA-03-1', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:1, tipo:'precision', tipoLabel:'Precisión', marca:'BLUE BOX', potenciaBTU:440000, gas:'R-410A' },
-  { id:'CL-CHA-03-2', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:2, tipo:'precision', tipoLabel:'Precisión', marca:'BLUE BOX', potenciaBTU:440000, gas:'R-410A' },
-  { id:'CL-CHA-03-3', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:3, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'GREE', potenciaBTU:48000, gas:'R-410A' },
-  { id:'CL-CHA-03-4', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:3, salaLabel:'Aglomerado · Sala N°3', tag:4, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'ANWO', potenciaBTU:36000, gas:'R-410A' },
-  { id:'CL-CHA-04-1', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:4, salaLabel:'Aglomerado · Sala N°4', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'Khone', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-CHA-03-1', area:'Chancado', areaEspecifica:'Chancado', salaNum:3, salaLabel:'Chancado · Sala N°3 (Sala Eléctrica Colectores de Polvo)', tag:1, tipo:'compacto', tipoLabel:'Compacto', marca:'SENDO', potenciaBTU:358000, gas:'R-410A', modelo:'SRT-CT1H105A1E' },
+  { id:'CL-CHA-04-1', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:4, salaLabel:'Aglomerado · Sala N°4', tag:1, tipo:'precision', tipoLabel:'Precisión', marca:'BLUE BOX', potenciaBTU:440000, gas:'R-410A' },
+  { id:'CL-CHA-04-2', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:4, salaLabel:'Aglomerado · Sala N°4', tag:2, tipo:'precision', tipoLabel:'Precisión', marca:'BLUE BOX', potenciaBTU:440000, gas:'R-410A' },
+  { id:'CL-CHA-04-3', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:4, salaLabel:'Aglomerado · Sala N°4', tag:3, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'GREE', potenciaBTU:48000, gas:'R-410A' },
+  { id:'CL-CHA-04-4', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:4, salaLabel:'Aglomerado · Sala N°4', tag:4, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'ANWO', potenciaBTU:36000, gas:'R-410A' },
+  { id:'CL-CHA-05-1', area:'Chancado', areaEspecifica:'Aglomerado', salaNum:5, salaLabel:'Aglomerado · Sala N°5', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'Khone', potenciaBTU:36000, gas:'R-410A' },
   { id:'CL-API-01-1', area:'Apilamiento', areaEspecifica:'Apilamiento', salaNum:1, salaLabel:'Apilamiento · Sala N°1', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
   { id:'CL-API-01-2', area:'Apilamiento', areaEspecifica:'Apilamiento', salaNum:1, salaLabel:'Apilamiento · Sala N°1', tag:2, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
   { id:'CL-API-02-1', area:'Apilamiento', areaEspecifica:'Apilamiento', salaNum:2, salaLabel:'Apilamiento · Sala N°2', tag:1, tipo:'split_bajo_silueta', tipoLabel:'Split Bajo Silueta', marca:'KHONE', potenciaBTU:36000, gas:'R-410A' },
@@ -4142,9 +4142,9 @@ function todayISO(){ return new Date().toISOString().slice(0,10); }
 function nowTimeHHMM(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
 
 const EQUIPOS_PIN = '1987'; // clave fija del maestro de equipos (técnicos, supervisores, altas/bajas) — la cambia solo Mario, aquí en el código
-const EQUIPOS_DEFAULT_VERSION = 2; // subir en 1 cada vez que EQUIPOS_DEFAULT cambie
+const EQUIPOS_DEFAULT_VERSION = 3; // subir en 1 cada vez que EQUIPOS_DEFAULT cambie
 // Sin IDs obsoletos aún (primera versión del maestro de Clima).
-const OBSOLETE_IDS_V2 = [];
+const OBSOLETE_IDS_V2 = ['CL-CHA-02-7']; // el Compacto SENDO se agregó primero mal (como tag 7 de Sala N°2) y se corrigió a su propia Sala N°3 (CL-CHA-03-1)
 
 async function loadEquipos(){
   const saved = await storage.get('equipos_master');
@@ -6546,7 +6546,7 @@ document.getElementById('fileImport').addEventListener('change', (e) => { if(e.t
 /* ============================================================
    INIT
    ============================================================ */
-const APP_VERSION = 'clima-v3'; // subir junto con la versión del service-worker en cada entrega
+const APP_VERSION = 'clima-v4'; // subir junto con la versión del service-worker en cada entrega
 
 async function init(){
   document.getElementById('appVersion').textContent = APP_VERSION;
