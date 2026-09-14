@@ -4142,9 +4142,9 @@ function todayISO(){ return new Date().toISOString().slice(0,10); }
 function nowTimeHHMM(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
 
 const EQUIPOS_PIN = '1987'; // clave fija del maestro de equipos (técnicos, supervisores, altas/bajas) — la cambia solo Mario, aquí en el código
-const EQUIPOS_DEFAULT_VERSION = 3; // subir en 1 cada vez que EQUIPOS_DEFAULT cambie
+const EQUIPOS_DEFAULT_VERSION = 4; // subir en 1 cada vez que EQUIPOS_DEFAULT cambie
 // Sin IDs obsoletos aún (primera versión del maestro de Clima).
-const OBSOLETE_IDS_V2 = ['CL-CHA-02-7']; // el Compacto SENDO se agregó primero mal (como tag 7 de Sala N°2) y se corrigió a su propia Sala N°3 (CL-CHA-03-1)
+const OBSOLETE_IDS_V2 = ['CL-CHA-02-7', 'CL-CHA-03-2', 'CL-CHA-03-3', 'CL-CHA-03-4']; // 02-7: el SENDO se agregó primero mal en Sala N°2, se corrigió a su propia Sala N°3 (CL-CHA-03-1). 03-2/3/4: al renombrar Aglomerado de Sala N°3 a Sala N°4, esos 3 quedaron huérfanos con el número/nombre de sala viejo — sus reemplazos correctos son CL-CHA-04-2/3/4.
 
 async function loadEquipos(){
   const saved = await storage.get('equipos_master');
@@ -6546,7 +6546,7 @@ document.getElementById('fileImport').addEventListener('change', (e) => { if(e.t
 /* ============================================================
    INIT
    ============================================================ */
-const APP_VERSION = 'clima-v4'; // subir junto con la versión del service-worker en cada entrega
+const APP_VERSION = 'clima-v5'; // subir junto con la versión del service-worker en cada entrega
 
 async function init(){
   document.getElementById('appVersion').textContent = APP_VERSION;
