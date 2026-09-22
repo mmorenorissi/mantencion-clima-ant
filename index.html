@@ -2840,7 +2840,8 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
 
     <div id="draftBanner" style="display:none;margin-bottom:12px;background:var(--regular-bg);border:1.5px solid var(--regular);border-radius:10px;padding:12px 14px;"></div>
 
-    <button class="btn-full" style="background:var(--steel);color:#fff;padding:16px;font-size:15.5px;margin-bottom:14px;" id="btnIniciarMtto">🛠️ Iniciar Mantención</button>
+    <button class="btn-full" style="background:var(--steel);color:#fff;padding:16px;font-size:15.5px;margin-bottom:10px;" id="btnIniciarMtto">🛠️ Iniciar Mantención</button>
+    <button class="btn-full" style="background:var(--steel);color:#fff;padding:16px;font-size:15.5px;margin-bottom:14px;" id="btnIniciarInsp">🔍 Iniciar Inspección</button>
 
     <div class="card">
       <div class="card-head"><h2>Últimos registros</h2></div>
@@ -4056,7 +4057,28 @@ const ENTREGA_ITEMS_PRESURIZADORES = [
 ];
 function getEntregaItems(){ return currentSistema === 'presurizadores' ? ENTREGA_ITEMS_PRESURIZADORES : ENTREGA_ITEMS_CLIMA; }
 
-function itemsForServicio(servicio){ return buildMttoPauta(); }
+function itemsForServicio(servicio){ return servicio === 'inspeccion' ? buildInspeccionPauta() : buildMttoPauta(); }
+
+// Inspección = versión corta de Mantención: un ítem por sección (no el detalle completo),
+// sin repuestos asociados. Se deriva automáticamente de la(s) misma(s) sección(es) que ya
+// existen para Mantención (PAUTAS_CLIMA / PAUTA_PRESURIZADORES), así que si el maestro de
+// secciones cambia, Inspección se actualiza sola — no hay contenido duplicado a mano.
+function buildInspeccionPauta(){
+  let seccionesBase;
+  if(currentSistema === 'presurizadores'){
+    seccionesBase = PAUTA_PRESURIZADORES;
+  } else {
+    const equipoId = document.getElementById('f_equipo') ? document.getElementById('f_equipo').value : '';
+    const equipo = equipos.find(e => e.id === equipoId);
+    const tipo = equipo ? equipo.tipo : 'mochila';
+    seccionesBase = PAUTAS_CLIMA[tipo] || PAUTAS_CLIMA.mochila;
+  }
+  const items = seccionesBase.map(sec => ({
+    texto: `Estado general — ${sec.title}`,
+    fotoObligatoria: 'si_malo'
+  }));
+  return [{ key: 'inspeccion_general', title: 'INSPECCIÓN VISUAL GENERAL', items }];
+}
 
 /* ============================================================
    ALMACENAMIENTO PROPIO (IndexedDB) — independiente, en este dispositivo.
@@ -4124,7 +4146,7 @@ let presurizadores = [];       // maestro de presurizadores (persistido)
 let tecnicos = [];             // maestro de técnicos (persistido)
 let supervisores = [];         // maestro de supervisores (persistido)
 let currentId = null;         // id del registro en edición (null = nuevo)
-let currentServicio = null;   // 'inspeccion' | 'mtto' (siempre 'mtto' — no se hacen inspecciones)
+let currentServicio = null;   // 'inspeccion' | 'mtto' — lo fija el botón de inicio (Iniciar Inspección / Iniciar Mantención)
 let currentSistema = 'clima'; // 'clima' | 'presurizadores' — qué tarjeta de la portada se está usando
 let itemState = {};           // { 'motor-0': {status:'', obs:''}, ... }  status: bueno|regular|malo|na|''
 let photoState = {};          // { 'motor-0': [dataURL,...] }
@@ -4290,8 +4312,9 @@ document.getElementById('choiceClima').addEventListener('click', () => goToView(
 document.getElementById('choicePresurizadores').addEventListener('click', () => goToView('presurizadores'));
 document.getElementById('volverAppSelectClima').addEventListener('click', () => goToView('home'));
 document.getElementById('volverAppSelectPresu').addEventListener('click', () => goToView('home'));
-document.getElementById('btnIniciarMtto').addEventListener('click', () => startNewForm('clima'));
-document.getElementById('btnIniciarMttoPz').addEventListener('click', () => startNewForm('presurizadores'));
+document.getElementById('btnIniciarMtto').addEventListener('click', () => startNewForm('clima', 'mtto'));
+document.getElementById('btnIniciarInsp').addEventListener('click', () => startNewForm('clima', 'inspeccion'));
+document.getElementById('btnIniciarMttoPz').addEventListener('click', () => startNewForm('presurizadores', 'mtto'));
 
 function populateAreaSelectPlain(id, esPresurizador){
   const sel = document.getElementById(id);
@@ -4830,7 +4853,7 @@ async function renderDraftBanner(boxId, sistemaFiltro){
   box.style.display = 'block';
   box.innerHTML = `
     <b style="color:var(--regular);">⏸ Tienes un checklist sin guardar</b><br>
-    <span style="font-size:12.5px;color:var(--muted);">Mantención · ${esc(equipoLabel)} · guardado automático: ${esc(fecha)}</span>
+    <span style="font-size:12.5px;color:var(--muted);">${(draft.servicio === 'inspeccion') ? 'Inspección' : 'Mantención'} · ${esc(equipoLabel)} · guardado automático: ${esc(fecha)}</span>
     <div style="display:flex;gap:8px;margin-top:9px;">
       <button class="btn-full btnResumeDraftX" style="background:var(--ink);color:#fff;padding:10px;">Continuar</button>
       <button class="btn-full btnDiscardDraftX" style="background:#fff;color:var(--malo);border:1.5px solid var(--malo-bg);padding:10px;">Descartar</button>
@@ -4847,7 +4870,7 @@ async function renderDraftBanner(boxId, sistemaFiltro){
 
 async function resumeDraft(draft){
   currentId = draft.esBorrador ? null : draft.id; // el borrador se guarda como registro nuevo
-  currentServicio = 'mtto';
+  currentServicio = draft.servicio || 'mtto';
   currentSistema = draft.sistema || 'clima';
   itemState = draft.items || {}; photoState = draft.photos || {};
   repuestosUsados = draft.repuestosUsados || []; repuestosRec = draft.repuestosRec || [];
@@ -4856,7 +4879,7 @@ async function resumeDraft(draft){
   plannedSnapshot = draft.maintenancePlanSnapshot || null;
   sigData.sigTecnico = draft.sigTecnico; sigData.sigSupervisor = draft.sigSupervisor;
 
-  document.getElementById('formTitle').textContent = 'Mantención';
+  document.getElementById('formTitle').textContent = currentServicio === 'inspeccion' ? 'Inspección' : 'Mantención';
   document.getElementById('recIdLabel').textContent = 'borrador recuperado';
   document.getElementById('btnDelete').style.display = 'none';
   document.getElementById('f_intervaloWrap').style.display = 'none';
@@ -4916,10 +4939,11 @@ function blankPhotoState(servicio){
   return state;
 }
 
-function startNewForm(sistema){
+function startNewForm(sistema, servicio){
+  servicio = servicio || 'mtto';
   currentId = null;
   currentSistema = sistema;
-  currentServicio = 'mtto';
+  currentServicio = servicio;
   repuestosUsados = [];
   repuestosRec = [];
   entregaState = {};
@@ -4927,7 +4951,7 @@ function startNewForm(sistema){
   plannedState = {};
   plannedSnapshot = null;
 
-  document.getElementById('formTitle').textContent = 'Mantención';
+  document.getElementById('formTitle').textContent = servicio === 'inspeccion' ? 'Inspección' : 'Mantención';
   document.getElementById('recIdLabel').textContent = 'registro nuevo';
   document.getElementById('btnDelete').style.display = 'none';
   document.getElementById('f_intervaloWrap').style.display = 'none';
@@ -4938,15 +4962,15 @@ function startNewForm(sistema){
 
   // se arma DESPUÉS de limpiar los selects, para que la pauta inicial no herede
   // el equipo/intervalo de un registro anterior
-  itemState = blankItemState();
-  photoState = blankPhotoState();
+  itemState = blankItemState(servicio);
+  photoState = blankPhotoState(servicio);
 
   const ninformeEl = document.getElementById('f_ninforme');
   ninformeEl.value = '';
   delete ninformeEl.dataset.autofolio;
   document.getElementById('f_ot').value = '';
   document.getElementById('f_fecha').value = todayISO();
-  document.getElementById('f_tiposervicio').value = 'MANTENCIÓN';
+  document.getElementById('f_tiposervicio').value = servicio === 'inspeccion' ? 'INSPECCIÓN' : 'MANTENCIÓN';
   renderTecnicoRows([]);
   populateSupervisorSelect('');
   populateCompletadoPorSelect('');
@@ -5514,7 +5538,8 @@ async function subirPdfRemoto(rec){
     const filename = formatFilenamePDF({
       ot: otRemota,
       equipoNombre: rec.equipoNombre || rec.interno || 'Equipo',
-      fecha: rec.fecha
+      fecha: rec.fecha,
+      servicio: rec.servicio
     });
     const body = new URLSearchParams();
     body.set('action', 'guardarpdf');
@@ -5732,7 +5757,7 @@ document.getElementById('remoteModal').addEventListener('click', (e) => { if(e.t
 async function loadRecordIntoForm(id){
   const rec = await storage.get('registro:' + id);
   if(!rec){ toast('No se encontró el registro'); return; }
-  currentId = rec.id; currentServicio = 'mtto';
+  currentId = rec.id; currentServicio = rec.servicio || 'mtto';
   currentSistema = rec.sistema || 'clima';
   itemState = rec.items; photoState = rec.photos || {};
   repuestosUsados = rec.repuestosUsados || []; repuestosRec = rec.repuestosRec || [];
@@ -5740,7 +5765,7 @@ async function loadRecordIntoForm(id){
   plannedState = rec.plannedState || {};
   sigData.sigTecnico = rec.sigTecnico; sigData.sigSupervisor = rec.sigSupervisor;
 
-  document.getElementById('formTitle').textContent = 'Mantención';
+  document.getElementById('formTitle').textContent = currentServicio === 'inspeccion' ? 'Inspección' : 'Mantención';
   document.getElementById('recIdLabel').textContent = 'guardado · ' + rec.id;
   document.getElementById('btnDelete').style.display = 'block';
   document.getElementById('f_intervaloWrap').style.display = 'none';
@@ -6199,13 +6224,14 @@ document.getElementById('btnDelete').addEventListener('click', async () => {
     goToView('history');
   }
 });
-function formatFilenamePDF({ ot, equipoNombre, fecha }){
+function formatFilenamePDF({ ot, equipoNombre, fecha, servicio }){
   let fechaFmt = fecha;
   if(fecha && /^\d{4}-\d{2}-\d{2}$/.test(fecha)){
     const [y,m,d] = fecha.split('-');
     fechaFmt = `${d}-${m}-${y}`; // se usa guion, no "/" — la barra no es válida en nombres de archivo
   }
-  const partes = [ot, 'Mantención', equipoNombre, fechaFmt].filter(Boolean);
+  const etiquetaServicio = servicio === 'inspeccion' ? 'Inspección' : 'Mantención';
+  const partes = [ot, etiquetaServicio, equipoNombre, fechaFmt].filter(Boolean);
   return partes.join(' ').replace(/[\\/:*?"<>|]/g, '-') + '.pdf';
 }
 function buildInformeFilename(){
@@ -6217,7 +6243,8 @@ function buildInformeFilename(){
   return formatFilenamePDF({
     ot: document.getElementById('f_ot').value.trim(),
     equipoNombre,
-    fecha: document.getElementById('f_fecha').value
+    fecha: document.getElementById('f_fecha').value,
+    servicio: currentServicio
   });
 }
 
@@ -6249,12 +6276,13 @@ document.getElementById('btnCompartir').addEventListener('click', async () => {
   const estado = computeEquipoEstado(itemState);
   const ninforme = document.getElementById('f_ninforme').value || 's/n';
   const fecha = document.getElementById('f_fecha').value || '—';
-  const texto = `Mantención — ${equipoNombre}\nFolio: ${ninforme}\nFecha: ${fecha}\n\nResultado: ${counts.bueno} Bueno / ${counts.regular} Regular / ${counts.malo} Malo\nEstado: ${estado.label}`;
+  const etiquetaServicioShare = currentServicio === 'inspeccion' ? 'Inspección' : 'Mantención';
+  const texto = `${etiquetaServicioShare} — ${equipoNombre}\nFolio: ${ninforme}\nFecha: ${fecha}\n\nResultado: ${counts.bueno} Bueno / ${counts.regular} Regular / ${counts.malo} Malo\nEstado: ${estado.label}`;
   // Respaldo: siempre queda copiado al portapapeles, aunque el share nativo no
   // rellene bien el correo (en computador a veces no carga el cuerpo del mensaje).
   if(navigator.clipboard){ try{ await navigator.clipboard.writeText(texto); }catch(e){} }
   if(navigator.share){
-    try{ await navigator.share({ title: `Mantención ${equipoNombre}`, text: texto }); }
+    try{ await navigator.share({ title: `${etiquetaServicioShare} ${equipoNombre}`, text: texto }); }
     catch(err){ toast('✓ Resumen copiado al portapapeles (pégalo donde lo necesites)'); return; }
     toast('✓ También quedó copiado al portapapeles por si el correo llegó vacío');
   } else if(navigator.clipboard){
@@ -6332,11 +6360,13 @@ async function generarInformePDF(){
   const equipoNombre = equipoSel ? (esPz ? equipoSel.salaNombre : `N°${equipoSel.tag} — ${equipoSel.tipoLabel}`) : (interno !== '—' ? interno : 'Equipo');
   const counts = summarizeItems(itemState);
   const estado = computeEquipoEstado(itemState);
+  const esInspeccion = currentServicio === 'inspeccion';
+  const etiquetaServicioPdf = esInspeccion ? 'Inspección' : 'Mantención';
 
   doc.setFont('helvetica','bold'); doc.setFontSize(14);
-  doc.text('INFORME DE SERVICIO — MANTENCIÓN', marginX, y); y += 6;
+  doc.text(`INFORME DE SERVICIO — ${etiquetaServicioPdf.toUpperCase()}`, marginX, y); y += 6;
   doc.setFont('helvetica','normal'); doc.setFontSize(8);
-  doc.text(esPz ? 'Mantención de Presurizadores EPA/HEPA — Minera Antucoya (Elecmain)' : 'Mantención de Equipos de Climatización — Minera Antucoya (Elecmain)', marginX, y); y += 7;
+  doc.text((esPz ? `${etiquetaServicioPdf} de Presurizadores EPA/HEPA` : `${etiquetaServicioPdf} de Equipos de Climatización`) + ' — Minera Antucoya (Elecmain)', marginX, y); y += 7;
 
   doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.text('1. Datos Generales', marginX, y); y += 5;
   doc.setFont('helvetica','normal');
@@ -6375,7 +6405,7 @@ async function generarInformePDF(){
   doc.setFont('helvetica','normal');
 
   let secNum = 2;
-  const esInspeccion = currentServicio === 'inspeccion';
+  // esInspeccion ya se calculó más arriba, junto con el título del informe.
   // Detalle de la intervención: checklist + repuestos programados, en el MISMO orden
   // que aparecen en la app real (Seguridad → Repuestos programados → Componentes → Puesta en
   // marcha), cada ítem con su resultado y su foto justo debajo — no separado al final.
@@ -6626,7 +6656,7 @@ document.getElementById('fileImport').addEventListener('change', (e) => { if(e.t
 /* ============================================================
    INIT
    ============================================================ */
-const APP_VERSION = 'clima-v8'; // subir junto con la versión del service-worker en cada entrega
+const APP_VERSION = 'clima-v9'; // subir junto con la versión del service-worker en cada entrega
 
 async function init(){
   document.getElementById('appVersion').textContent = APP_VERSION;
