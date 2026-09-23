@@ -3,7 +3,7 @@
 // suben JUNTOS, en cada entrega. El registro en index.html agrega "?v=APP_VERSION" a la
 // URL de este archivo, así el navegador lo trata como un archivo nuevo y no se queda
 // pegado en una versión vieja cacheada.
-const CACHE = 'clima-ant-v14';
+const CACHE = 'clima-ant-v15';
 
 const PRECACHE_URLS = [
   './index.html',
