@@ -38,7 +38,7 @@
   .topbar{background:#00778B;color:#fff;padding:calc(14px + env(safe-area-inset-top)) 14px 0;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.15);}
   .topbar .brand{display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer;}
   .brand .badge{width:32px;height:32px;border-radius:8px;background:var(--safety);display:flex;align-items:center;justify-content:center;color:var(--safety-ink);font-family:var(--font-display);font-weight:700;font-size:15px;flex:none;}
-  .brand .badge-ant{width:32px;height:32px;border-radius:8px;background:#64CCC9;display:flex;align-items:center;justify-content:center;color:var(--ink);font-family:var(--font-display);font-weight:700;font-size:15px;flex:none;margin-left:auto;}
+  .brand .badge-ant{width:32px;height:32px;border-radius:8px;background:var(--safety);display:flex;align-items:center;justify-content:center;color:var(--safety-ink);font-family:var(--font-display);font-weight:700;font-size:15px;flex:none;margin-left:auto;}
   .brand h1{font-size:17px;font-weight:700;line-height:1.15;}
   .brand small{display:block;font-family:var(--font-mono);font-size:10px;color:#B7BECB;letter-spacing:.02em;margin-top:1px;}
   .tabs{display:flex;gap:2px;}
@@ -6661,7 +6661,7 @@ document.getElementById('fileImport').addEventListener('change', (e) => { if(e.t
 /* ============================================================
    INIT
    ============================================================ */
-const APP_VERSION = 'clima-v11'; // subir junto con la versión del service-worker en cada entrega
+const APP_VERSION = 'clima-v12'; // subir junto con la versión del service-worker en cada entrega
 
 async function init(){
   document.getElementById('appVersion').textContent = APP_VERSION;
