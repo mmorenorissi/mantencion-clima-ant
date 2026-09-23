@@ -3052,6 +3052,17 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
         <div class="filter-chip" data-f="clima">Clima</div>
         <div class="filter-chip" data-f="presurizadores">Presurizadores</div>
       </div>
+      <div class="card-pad" style="padding:10px 14px 0;display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;flex:1;min-width:112px;">
+          <label style="font-size:10.5px;color:var(--muted);margin-bottom:3px;">Desde</label>
+          <input type="date" id="histDesde" style="padding:8px 9px;border:1.5px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit;">
+        </div>
+        <div style="display:flex;flex-direction:column;flex:1;min-width:112px;">
+          <label style="font-size:10.5px;color:var(--muted);margin-bottom:3px;">Hasta</label>
+          <input type="date" id="histHasta" style="padding:8px 9px;border:1.5px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit;">
+        </div>
+        <button class="btn btn-secondary" id="btnHistUltimos7" style="flex:none;white-space:nowrap;">Últimos 7 días</button>
+      </div>
       <div id="histList" style="margin-top:8px;"></div>
     </div>
     <div class="modal-bg" id="remoteModal">
@@ -3080,25 +3091,6 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
         </p>
       </div>
     </div>
-    <div class="card">
-      <div class="card-head"><h2>Respaldo y exportación</h2></div>
-      <div class="card-pad" style="display:flex;gap:10px;">
-        <button class="btn btn-secondary" id="btnExport" style="flex:1;">⬇ Respaldo JSON</button>
-        <button class="btn btn-secondary" id="btnExportCSV" style="flex:1;">📊 Exportar CSV</button>
-      </div>
-      <div class="card-pad" style="padding-top:0;">
-        <label class="btn btn-secondary" style="width:100%;text-align:center;display:block;">
-          ⬆ Importar respaldo
-          <input type="file" accept="application/json" id="fileImport" style="display:none;">
-        </label>
-      </div>
-      <div class="card-pad" style="padding-top:0;">
-        <p style="font-size:11.5px;color:var(--muted);line-height:1.4;margin:0;">
-          Los registros se guardan siempre en este dispositivo/navegador, aunque tengas la sincronización activada.
-          Exporta un respaldo cada cierto tiempo y guárdalo en Archivos, correo o WhatsApp.
-        </p>
-      </div>
-    </div>
   </section>
 
   <!-- Overlay del escáner QR: fuera de las secciones .view a propósito.
@@ -3124,7 +3116,7 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
       <div class="card-pad" style="padding-top:0;">
         <p style="font-size:11px;color:var(--muted);line-height:1.4;margin:0;background:var(--paper);border-radius:8px;padding:9px 11px;">
           💾 Estos cambios se guardan solo en este teléfono. Si haces ediciones importantes (nombres, equipos nuevos, técnicos),
-          ve a <b>Historial → Respaldo JSON</b> y guarda una copia — así no se pierde nada aunque el teléfono borre datos algún día.
+          baja hasta <b>Respaldo y exportación</b> (más abajo, en esta misma pestaña) y guarda una copia — así no se pierde nada aunque el teléfono borre datos algún día.
         </p>
       </div>
     </div>
@@ -3214,6 +3206,26 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
       <div class="card-pad" style="display:flex;gap:8px;">
         <input type="text" id="nuevoSupervisor" placeholder="Nombre del supervisor" style="flex:1;padding:10px 11px;border:1.5px solid var(--line);border-radius:8px;font-size:15px;">
         <button style="flex:none;padding:10px 16px;border-radius:8px;border:none;background:var(--steel);color:#fff;font-weight:700;" id="addSupervisorBtn">Agregar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Respaldo y exportación</h2></div>
+      <div class="card-pad" style="display:flex;gap:10px;">
+        <button class="btn btn-secondary" id="btnExport" style="flex:1;">⬇ Respaldo JSON</button>
+        <button class="btn btn-secondary" id="btnExportCSV" style="flex:1;">📊 Exportar CSV</button>
+      </div>
+      <div class="card-pad" style="padding-top:0;">
+        <label class="btn btn-secondary" style="width:100%;text-align:center;display:block;">
+          ⬆ Importar respaldo
+          <input type="file" accept="application/json" id="fileImport" style="display:none;">
+        </label>
+      </div>
+      <div class="card-pad" style="padding-top:0;">
+        <p style="font-size:11.5px;color:var(--muted);line-height:1.4;margin:0;">
+          Los registros se guardan siempre en este dispositivo/navegador, aunque tengas la sincronización activada.
+          Exporta un respaldo cada cierto tiempo y guárdalo en Archivos, correo o WhatsApp.
+        </p>
       </div>
     </div>
   </section>
@@ -5843,6 +5855,19 @@ document.getElementById('histSearch').addEventListener('input', (e) => {
   histSearchTerm = e.target.value.trim().toLowerCase();
   loadHistory();
 });
+let histDateRange = { desde: '', hasta: '' };
+document.getElementById('histDesde').addEventListener('change', (e) => { histDateRange.desde = e.target.value; loadHistory(); });
+document.getElementById('histHasta').addEventListener('change', (e) => { histDateRange.hasta = e.target.value; loadHistory(); });
+document.getElementById('btnHistUltimos7').addEventListener('click', () => {
+  const hoy = new Date();
+  const hace7 = new Date(hoy); hace7.setDate(hoy.getDate() - 7);
+  const fmt = (d) => d.toISOString().slice(0, 10);
+  histDateRange.desde = fmt(hace7);
+  histDateRange.hasta = fmt(hoy);
+  document.getElementById('histDesde').value = histDateRange.desde;
+  document.getElementById('histHasta').value = histDateRange.hasta;
+  loadHistory();
+});
 
 async function loadHistory(){
   const list = document.getElementById('histList');
@@ -5881,18 +5906,42 @@ async function loadHistory(){
     return true;
   });
 
-  if(!idx.length && !remotosFiltrados.length){ list.innerHTML = `<div class="empty-state">Sin registros que coincidan.</div>`; return; }
+  // Filtro de fecha (§77) — sobre el campo 'fecha' (fecha del servicio), en
+  // ambos orígenes. Sin rango activo, no filtra nada (se muestra todo).
+  const { desde, hasta } = histDateRange;
+  const dentroDeRango = (fecha) => {
+    if(!desde && !hasta) return true;
+    if(!fecha) return false; // hay rango activo y este registro no tiene fecha: no calza
+    if(desde && fecha < desde) return false;
+    if(hasta && fecha > hasta) return false;
+    return true;
+  };
+  const idxEnRango = idx.filter(x => dentroDeRango(x.fecha));
+  const remotosEnRango = remotosFiltrados.filter(r => dentroDeRango(r.fecha));
 
-  const localesHTML = idx.map(item => `<div style="display:flex;align-items:center;">
-      <div style="flex:1;">${historyRowHTML(item)}</div>
-      <button class="hist-del" data-del="${item.id}" style="margin-right:10px;">🗑</button>
-    </div>`).join('');
-  const remotosHTML = await Promise.all(remotosFiltrados.map(async r => `<div style="display:flex;align-items:center;">
-      <div style="flex:1;">${await remoteRowHTML(r)}</div>
-      <button class="hist-del" data-delremote="${esc(r.id)}" data-delremote-sistema="${esc(r.sistema||'clima')}" style="margin-right:10px;">🗑</button>
-    </div>`));
+  if(!idxEnRango.length && !remotosEnRango.length){ list.innerHTML = `<div class="empty-state">Sin registros que coincidan.</div>`; return; }
 
-  list.innerHTML = localesHTML + remotosHTML.join('');
+  // §77.3 — lista única ordenada por fecha del servicio (no por
+  // savedAt/updatedAt), en vez de dos bloques locales+remotos pegados.
+  const combinados = [
+    ...idxEnRango.map(item => ({ origen: 'local', fecha: item.fecha || '', item })),
+    ...remotosEnRango.map(item => ({ origen: 'remoto', fecha: item.fecha || '', item })),
+  ].sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+
+  const filasHTML = await Promise.all(combinados.map(async ({ origen, item }) => {
+    if(origen === 'local'){
+      return `<div style="display:flex;align-items:center;">
+        <div style="flex:1;">${historyRowHTML(item)}</div>
+        <button class="hist-del" data-del="${item.id}" style="margin-right:10px;">🗑</button>
+      </div>`;
+    }
+    return `<div style="display:flex;align-items:center;">
+      <div style="flex:1;">${await remoteRowHTML(item)}</div>
+      <button class="hist-del" data-delremote="${esc(item.id)}" data-delremote-sistema="${esc(item.sistema||'clima')}" style="margin-right:10px;">🗑</button>
+    </div>`;
+  }));
+
+  list.innerHTML = filasHTML.join('');
   list.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => loadRecordIntoForm(el.dataset.open)));
   list.querySelectorAll('[data-remote]').forEach(el => el.addEventListener('click', () => openRemoteDetail(el.dataset.remote, el.dataset.remoteSistema)));
   list.querySelectorAll('[data-del]').forEach(el => el.addEventListener('click', async (e) => {
@@ -6661,7 +6710,7 @@ document.getElementById('fileImport').addEventListener('change', (e) => { if(e.t
 /* ============================================================
    INIT
    ============================================================ */
-const APP_VERSION = 'clima-v13'; // subir junto con la versión del service-worker en cada entrega
+const APP_VERSION = 'clima-v14'; // subir junto con la versión del service-worker en cada entrega
 
 async function init(){
   document.getElementById('appVersion').textContent = APP_VERSION;
