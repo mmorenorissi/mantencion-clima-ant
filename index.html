@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<title>Mantención Equipos de Clima y Presurizadores</title>
+<title>Mantenimiento Climatización y Presurizadores ANT</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -35,9 +35,10 @@
   .mono{font-family:var(--font-mono);}
   button{font-family:inherit;}
 
-  .topbar{background:linear-gradient(180deg,var(--graphite),var(--ink));color:#fff;padding:calc(14px + env(safe-area-inset-top)) 14px 0;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+  .topbar{background:#00778B;color:#fff;padding:calc(14px + env(safe-area-inset-top)) 14px 0;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.15);}
   .topbar .brand{display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer;}
   .brand .badge{width:32px;height:32px;border-radius:8px;background:var(--safety);display:flex;align-items:center;justify-content:center;color:var(--safety-ink);font-family:var(--font-display);font-weight:700;font-size:15px;flex:none;}
+  .brand .badge-ant{width:32px;height:32px;border-radius:8px;background:#64CCC9;display:flex;align-items:center;justify-content:center;color:var(--ink);font-family:var(--font-display);font-weight:700;font-size:11px;flex:none;margin-left:auto;}
   .brand h1{font-size:17px;font-weight:700;line-height:1.15;}
   .brand small{display:block;font-family:var(--font-mono);font-size:10px;color:#B7BECB;letter-spacing:.02em;margin-top:1px;}
   .tabs{display:flex;gap:2px;}
@@ -2796,9 +2797,10 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
   <div class="brand" id="goHome">
     <div class="badge">MC</div>
     <div>
-      <h1>Mantención Equipos de Clima y Presurizadores</h1>
-      <small id="topSub">Antucoya · Elecmain · <span id="appVersion"></span></small>
+      <h1>Mantenimiento Climatización y Presurizadores ANT</h1>
+      <small id="topSub">Antucoya · Soporte a la Operación · <span id="appVersion"></span></small>
     </div>
+    <div class="badge-ant">ANT</div>
   </div>
   <div class="tabs">
     <div class="tab active" data-tab="home">Inicio</div>
@@ -2812,7 +2814,7 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
   <!-- ======================= PORTADA — selector de app ======================= -->
   <section class="view active" id="view-home">
     <div class="hero-title">
-      <h1>MANTENCIÓN EQUIPOS DE CLIMA Y PRESURIZADORES</h1>
+      <h1>MANTENIMIENTO CLIMATIZACIÓN Y PRESURIZADORES ANT</h1>
       <p>Selecciona qué vas a trabajar</p>
     </div>
 
@@ -3072,8 +3074,9 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
           <button class="btn btn-secondary" id="btnSyncNow" style="flex:1;">🔄 Sincronizar pendientes</button>
         </div>
         <p style="font-size:11px;color:var(--muted);line-height:1.4;margin:10px 0 0;">
-          Por ahora se sincronizan los datos de cada checklist (equipo, estados, observaciones) — las fotos y firmas
-          quedan solo en el dispositivo que las tomó, eso lo sumamos en una siguiente etapa.
+          Los datos del checklist se sincronizan con el historial compartido.
+          Las fotos y firmas no se almacenan por separado en Sheets; quedan
+          incorporadas en el PDF del informe que se sube a Drive.
         </p>
       </div>
     </div>
@@ -3164,8 +3167,8 @@ var jsQRLib=(()=>{var C0=(z,w)=>()=>{try{return w||z((w={exports:{}}).exports,w)
       </div>
       <div id="pzList"></div>
       <div class="card-pad" style="padding-top:0;">
-        <p style="font-size:11px;color:var(--muted);line-height:1.4;margin:0;background:var(--paper);border-radius:8px;padding:9px 11px;">
-          💾 33 presurizadores cargados desde el catastro inicial (Chancado, Apilamiento, Ripios, Húmeda). Truckshop no tiene presurizadores registrados.
+        <p id="pzCatastroInfo" style="font-size:11px;color:var(--muted);line-height:1.4;margin:0;background:var(--paper);border-radius:8px;padding:9px 11px;">
+          💾 34 presurizadores cargados desde el catastro inicial (Chancado, Apilamiento, Ripios, Húmeda). Truckshop no tiene presurizadores registrados.
         </p>
       </div>
     </div>
@@ -6047,6 +6050,8 @@ document.getElementById('btnCancelarEdicionEquipo').addEventListener('click', ca
    ============================================================ */
 let editingPzId = null;
 function renderPresurizadorList(){
+  const infoEl = document.getElementById('pzCatastroInfo');
+  if(infoEl) infoEl.innerHTML = `💾 ${presurizadores.length} presurizadores cargados desde el catastro inicial (Chancado, Apilamiento, Ripios, Húmeda). Truckshop no tiene presurizadores registrados.`;
   const box = document.getElementById('pzList');
   if(!presurizadores.length){ box.innerHTML = `<div class="card-pad empty-state">Sin presurizadores registrados.</div>`; return; }
   let html = '';
@@ -6656,7 +6661,7 @@ document.getElementById('fileImport').addEventListener('change', (e) => { if(e.t
 /* ============================================================
    INIT
    ============================================================ */
-const APP_VERSION = 'clima-v9'; // subir junto con la versión del service-worker en cada entrega
+const APP_VERSION = 'clima-v10'; // subir junto con la versión del service-worker en cada entrega
 
 async function init(){
   document.getElementById('appVersion').textContent = APP_VERSION;
